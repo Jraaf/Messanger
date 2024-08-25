@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import {DatePipe, NgClass} from "@angular/common";
+import {DatePipe, NgClass, NgForOf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 
 @Component({
@@ -9,7 +9,8 @@ import {FormsModule} from "@angular/forms";
   imports: [
     NgClass,
     DatePipe,
-    FormsModule
+    FormsModule,
+    NgForOf
   ],
   standalone: true
 })
