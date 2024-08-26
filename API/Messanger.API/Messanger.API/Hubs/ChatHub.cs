@@ -15,7 +15,7 @@ public class ChatHub(IDictionary<string, UserConnection> _connection) : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, connection.ChatRoom!);
         await Clients.Group(connection.ChatRoom!).
-            SendAsync("RecieveMessage", "admin", $"{connection.UserName} has joined the chat.");
+            SendAsync("RecieveMessage", "admin", $"{connection.UserName} has joined the chat.", DateTime.Now);
         await SendConnectedUser(connection.ChatRoom!);
     }
     public async Task SendMessage(string message)
@@ -23,7 +23,7 @@ public class ChatHub(IDictionary<string, UserConnection> _connection) : Hub
         if (_connection.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
         {
             await Clients.Group(userConnection.ChatRoom)
-                    .SendAsync("RecieveMessage", userConnection.UserName, message);
+                    .SendAsync("RecieveMessage", userConnection.UserName, message, DateTime.Now);
         }
     }
 
@@ -34,7 +34,7 @@ public class ChatHub(IDictionary<string, UserConnection> _connection) : Hub
             return base.OnDisconnectedAsync(exception);
         }
         Clients.Group(connection.ChatRoom!)
-            .SendAsync("RecieveMessage", "admin", $"{connection.UserName} has left the chat.");
+            .SendAsync("RecieveMessage", "admin", $"{connection.UserName} has left the chat.", DateTime.Now);
         SendConnectedUser(connection.ChatRoom!);
         return base.OnDisconnectedAsync(exception);
     }

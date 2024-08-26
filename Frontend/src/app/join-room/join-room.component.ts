@@ -1,6 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {ChatService} from "../chat.service";
 
 @Component({
   selector: 'app-join-room',
@@ -14,6 +15,7 @@ import {Router} from "@angular/router";
 export class JoinRoomComponent{
   joinRoomForm: FormGroup;
   router = inject(Router);
+  chatService = inject(ChatService);
 
   constructor(private fb: FormBuilder) {
     this.joinRoomForm = this.fb.group({
@@ -24,10 +26,16 @@ export class JoinRoomComponent{
 
 
   joinRoom() {
+
     if (this.joinRoomForm.valid) {
-      const { username, chatname } = this.joinRoomForm.value;
-      console.log('Joining room:', chatname, 'as user:', username);
-      this.router.navigateByUrl('/chat');
+      const { user, chat } = this.joinRoomForm.value;
+      this.chatService.joinRoom(user,chat)
+        .then(result => {
+          console.log('Joining room:', chat, 'as user:', user);
+          this.router.navigateByUrl('/chat');})
+        .catch((err)=>{
+          console.log(err);
+        });
     }
   }
 }

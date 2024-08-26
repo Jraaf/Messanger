@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +9,24 @@ public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
   .withUrl("http://localhost:5000/chat")
   .configureLogging(signalR.LogLevel.Information)
   .build();
-  constructor() { }
+
+  constructor() {
+    this.start();
+    this.connection.on(
+      "RecieveMessage",
+      (user:string,message:string,date:string)=>{
+        console.log("user: ", user);
+        console.log("message: ", message);
+        console.log("time: ", date);
+      }
+    );
+    this.connection.on(
+      "ConnectedUser",
+      (users:any)=>{
+        console.log("users: ", users);
+      }
+    );
+  }
 
   public async start(){
     try {
@@ -23,11 +39,11 @@ public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     }
   }
   public async joinRoom(user:string,room:string){
-    return this.connection.invoke("JoinSpecificChat",{user:user,room:room});
+    return this.connection.invoke("JoinSpecificChat",{user,room});
   }
 
-  public async sendMessage(user:string,room:string){
-    return this.connection.invoke("SendMessage",{user:user,room:room});
+  public async sendMessage(message:string){
+    return this.connection.invoke("SendMessage",message);
   }
 
   public async leave(){
