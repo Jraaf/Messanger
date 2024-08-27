@@ -5,15 +5,18 @@ import * as signalR from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class ChatService {
-public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-  .withUrl("http://localhost:5000/chat")
-  .configureLogging(signalR.LogLevel.Information)
-  .build();
+  public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:5000/chat")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
   constructor() {
-    this.start();
+    this.start()
+      .then(() => console.log("SignalR connection started"))
+      .catch(err => console.error("SignalR connection error: ", err));
+
     this.connection.on(
-      "RecieveMessage",
+      "ReceiveMessage",
       (user:string,message:string,date:string)=>{
         console.log("user: ", user);
         console.log("message: ", message);
@@ -21,7 +24,7 @@ public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
       }
     );
     this.connection.on(
-      "ConnectedUser",
+      "ConnectedUsers",
       (users:any)=>{
         console.log("users: ", users);
       }
@@ -31,6 +34,7 @@ public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
   public async start(){
     try {
         await this.connection.start();
+        console.log("connection started");
     }catch (error){
       console.log(error);
       setTimeout(()=>{
@@ -39,7 +43,15 @@ public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     }
   }
   public async joinRoom(user:string,room:string){
-    return this.connection.invoke("JoinSpecificChat",{user,room});
+    if (this.connection.state !== signalR.HubConnectionState.Connected) {
+      await this.connection.start(); // Ensure connection is started
+    }
+    try {
+      return await this.connection.invoke("JoinGroup", { userName: user, chatRoom: room });
+    } catch (err) {
+      console.error("Error joining room:", err);
+      throw err;
+    }
   }
 
   public async sendMessage(message:string){

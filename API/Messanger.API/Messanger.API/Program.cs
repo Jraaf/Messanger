@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<IDictionary<string, UserConnection>>(
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opt =>
     new Dictionary<string, UserConnection>());
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,10 +39,7 @@ app.UseCors();
 
 app.UseRouting();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ChatHub>("/chat");
-});
+app.MapHub<ChatHub>("/chat");
 
 app.MapControllers();
 
