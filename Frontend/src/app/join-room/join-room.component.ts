@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ChatService} from "../chat.service";
-import {CommonModule, NgIf} from "@angular/common";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-join-room',
