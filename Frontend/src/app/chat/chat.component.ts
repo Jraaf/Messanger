@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
-import {DatePipe, NgClass, NgForOf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgClass, NgForOf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {ChatService} from "../chat.service";
+import {sendMessage} from "@microsoft/signalr/dist/esm/Utils";
 
 @Component({
   selector: 'app-chat',
@@ -10,42 +12,53 @@ import {FormsModule} from "@angular/forms";
     NgClass,
     DatePipe,
     FormsModule,
-    NgForOf
+    NgForOf,
+    AsyncPipe
   ],
   standalone: true
 })
-export class ChatComponent {
-  chatName: string = 'General Chat';
-  members = [
-    { name: 'Alice', online: true },
-    { name: 'Bob', online: false },
-    { name: 'Charlie', online: true },
-    { name: 'Dave', online: true },
-    { name: 'Eve', online: false },
-  ];
-  messages = [
-    { sender: 'Alice', message: 'Hi everyone!', timestamp: new Date() },
-    { sender: 'Bob', message: 'Hello Alice!', timestamp: new Date() },
-    { sender: 'You', message: 'Hey folks, what’s up?', timestamp: new Date() },
-  ];
-  newMessage: string = '';
-  currentUser: string = 'You';
+export class ChatComponent implements OnInit {
+  chatService = inject(ChatService);
+  router = inject(Router);
+  messages: any[] = [];
+  inputMessage: string = '';
+  members: any=[];
 
-  constructor(private router: Router) {}
+  userDisplayName = sessionStorage.getItem("user");
+  groupName = sessionStorage.getItem("chatGroup");
 
-  sendMessage(): void {
-    if (this.newMessage.trim()) {
-      const message = {
-        sender: this.currentUser,
-        message: this.newMessage,
-        timestamp: new Date(),
-      };
-      this.messages.push(message);
-      this.newMessage = '';
-    }
+  ngOnInit(): void {
+    this.chatService.messages_.subscribe((res) => {
+      this.messages = res;
+      console.log(this.messages);
+    });
+
+    this.chatService.activeUsers.subscribe((res) => {
+      console.log(res);
+    });
+  }
+  sendChatMessage() {
+    this.chatService.sendChatMessage(this.inputMessage)
+      .then(() => {
+        this.inputMessage = '';
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  leaveChat() {
+    this.chatService.leaveChat()
+      .then(() => {
+        this.router.navigate(['join-group']);
+
+        setTimeout(() => {
+          location.reload();
+        }, 0);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
-  leaveChat(): void {
-    this.router.navigate(['/join']);
-  }
+  protected readonly sendMessage = sendMessage;
 }

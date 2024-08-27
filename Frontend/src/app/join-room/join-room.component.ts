@@ -1,44 +1,51 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ChatService} from "../chat.service";
-import {NgIf} from "@angular/common";
+import {CommonModule, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-join-room',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    NgIf
+    CommonModule
   ],
   templateUrl: './join-room.component.html',
   styleUrl: './join-room.component.css'
 })
-export class JoinRoomComponent {
-  joinRoomForm: FormGroup;
+export class JoinRoomComponent implements OnInit{
+  joinRoomForm!: FormGroup;
+  formBuilder = inject(FormBuilder);
   router = inject(Router);
   chatService = inject(ChatService);
 
-  constructor(private fb: FormBuilder) {
-    this.joinRoomForm = this.fb.group({
+  constructor() {
+
+  }
+  ngOnInit(): void {
+    // Initialize the form and define its structure with validation rules
+    this.joinRoomForm = this.formBuilder.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       chatname: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
-
   joinRoom() {
-    if (this.joinRoomForm.valid) {
-      // Correctly destructure form values
-      const { username, chatname } = this.joinRoomForm.value;
+    const { user, chatGroup: chat } = this.joinRoomForm.value;
 
-      this.chatService.joinRoom(username, chatname)
-        .then(result => {
-          console.log('Joining room:', chatname, 'as user:', username);
-          this.router.navigateByUrl('/chat');
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+    // Store user and chatGroup values in sessionStorage for future use
+    sessionStorage.setItem("user", user);
+    sessionStorage.setItem("chatGroup", chat);
+
+    // Call the joinGroup method from the chat service
+    this.chatService.joinGroup(user, chat)
+      .then(() => {
+        // If the joinGroup operation is successful, navigate to the 'chat' route
+        this.router.navigate(['chat']);
+      })
+      .catch((error) => {
+        // If there's an error during the joinGroup operation, log the error
+        console.log(error);
+      });
   }
 }
