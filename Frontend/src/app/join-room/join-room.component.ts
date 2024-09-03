@@ -26,12 +26,12 @@ export class JoinRoomComponent implements OnInit{
   ngOnInit(): void {
     // Initialize the form and define its structure with validation rules
     this.joinRoomForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      chatname: ['', [Validators.required, Validators.minLength(3)]]
+      user: ['', [Validators.required, Validators.minLength(3)]],
+      chat: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
   joinRoom() {
-    const { user, chatGroup: chat } = this.joinRoomForm.value;
+    const { user, chat } = this.joinRoomForm.value;
 
     // Store user and chatGroup values in sessionStorage for future use
     sessionStorage.setItem("user", user);

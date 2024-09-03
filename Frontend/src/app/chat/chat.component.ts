@@ -37,6 +37,7 @@ export class ChatComponent implements OnInit {
       console.log(res);
     });
   }
+
   sendChatMessage() {
     this.chatService.sendChatMessage(this.inputMessage)
       .then(() => {
@@ -49,7 +50,7 @@ export class ChatComponent implements OnInit {
   leaveChat() {
     this.chatService.leaveChat()
       .then(() => {
-        this.router.navigate(['join-group']);
+        this.router.navigate(['']);
 
         setTimeout(() => {
           location.reload();
@@ -59,6 +60,4 @@ export class ChatComponent implements OnInit {
         console.log(error);
       });
   }
-
-  protected readonly sendMessage = sendMessage;
 }

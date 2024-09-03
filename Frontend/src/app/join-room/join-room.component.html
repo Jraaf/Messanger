@@ -5,11 +5,11 @@
     <form [formGroup]="joinRoomForm" (ngSubmit)="joinRoom()">
       <!-- Username Field -->
       <div class="mb-6">
-        <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
-        <input type="text" id="username" formControlName="username"
+        <label for="user" class="block text-gray-700 font-semibold mb-2">Username</label>
+        <input type="text" id="user" formControlName="user"
                class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none"
                placeholder="Enter your username">
-        <div *ngIf="joinRoomForm.controls['username'].invalid && joinRoomForm.controls['username'].dirty"
+        <div *ngIf="joinRoomForm.controls['user'].invalid && joinRoomForm.controls['user'].dirty"
              class="mt-2 text-sm text-red-400">
           Username is required (min 3 characters)
         </div>
@@ -17,11 +17,11 @@
 
       <!-- Chatname Field -->
       <div class="mb-6">
-        <label for="chatname" class="block text-gray-700 font-semibold mb-2">Chat Room Name</label>
-        <input type="text" id="chatname" formControlName="chatname"
+        <label for="chat" class="block text-gray-700 font-semibold mb-2">Chat Room Name</label>
+        <input type="text" id="chat" formControlName="chat"
                class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none"
                placeholder="Enter chat room name">
-        <div *ngIf="joinRoomForm.controls['chatname'].invalid && joinRoomForm.controls['chatname'].dirty"
+        <div *ngIf="joinRoomForm.controls['chat'].invalid && joinRoomForm.controls['chat'].dirty"
              class="mt-2 text-sm text-red-400">
           Chat room name is required (min 3 characters)
         </div>
